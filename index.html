@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffebee;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            margin: 0; /* Remove default margin */
+        }
+        .background {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, rgba(255, 105, 180, 0.3), rgba(255, 20, 147, 0.2), rgba(255, 182, 193, 0.1));
+            transition: transform 0.1s linear;
+        }
+        .question {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+        }
+        .btn-custom {
+            font-size: 1.5rem;
+            padding: 10px 30px;
+            border-radius: 30px;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer; /* Ensure the cursor changes to pointer */
+        }
+        #yes-btn {
+            background-color: #d81b60;
+            color: white;
+        }
+        #yes-btn:hover {
+            transform: scale(1.2);
+        }
+        #no-btn {
+            background-color: #f44336;
+            color: white;
+            position: relative; /* Use relative positioning for better control */
+        }
+        .love-heart {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff1744;
+            animation: loveAnimation 2s ease-out forwards;
+        }
+        @keyframes loveAnimation {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            font-size: 1rem;
+            color: #d81b60;
+            z-index: 10; /* Ensure footer is above other elements */
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .question {
+                font-size: 1.5rem; /* Smaller font size for mobile */
+            }
+            .btn-custom {
+                font-size: 1.2rem; /* Smaller button font size for mobile */
+                padding: 8px 20px; /* Smaller padding for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="question">Would you be my Valentine? 💖</div>
+    <div class="buttons">
+        <button id="yes-btn" class="btn btn-custom">Yes</button>
+        <button id="no-btn" class="btn btn-custom">No</button>
+    </div>
+    <footer>Created by Ahmad (Leo)</footer>
+    <script>
+        const noBtn = document.getElementById("no-btn");
+        const yesBtn = document.getElementById("yes-btn");
+        const background = document.querySelector(".background");
+        let moveCount = 0;
+
+        // Define the bounding box for the "No" button's movement
+        const boundingBox = {
+            left: 50,   // 50px from the left edge of the screen
+            right: window.innerWidth - 150, // 150px from the right edge
+            top: 50,    // 50px from the top edge
+            bottom: window.innerHeight - 150, // 150px from the bottom edge
+        };
+
+        // Function to move the "No" button within the bounding box
+        function moveNoButton() {
+            const x = Math.random() * (boundingBox.right - boundingBox.left - noBtn.offsetWidth) + boundingBox.left;
+            const y = Math.random() * (boundingBox.bottom - boundingBox.top - noBtn.offsetHeight) + boundingBox.top;
+
+            noBtn.style.position = "absolute"; // Use absolute positioning for movement
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        }
+
+        // Function to reset the "No" button position beside the "Yes" button
+        function resetNoButtonPosition() {
+            noBtn.style.position = "relative"; // Reset to relative positioning
+            noBtn.style.left = "0";
+            noBtn.style.top = "0";
+        }
+
+        // Initial setup for the "No" button
+        resetNoButtonPosition();
+
+        // Move the "No" button when hovered or clicked
+        noBtn.addEventListener("mouseover", moveNoButton);
+        noBtn.addEventListener("click", moveNoButton);
+
+        // Handle "Yes" button click
+        yesBtn.addEventListener("click", function() {
+            if (moveCount === 1) {
+                showLoveAnimation();
+            } else {
+                yesBtn.style.transform = "scale(1.5)";
+                document.querySelector(".question").textContent = "Are you sure? 💞";
+                resetNoButtonPosition(); // Reset the "No" button position
+                moveCount++;
+            }
+        });
+
+        // Function to show love animation
+        function showLoveAnimation() {
+            document.querySelector(".question").textContent = "Happy Valentine's Day! 💖";
+            for (let i = 0; i < 20; i++) {
+                let heart = document.createElement("div");
+                heart.classList.add("love-heart");
+                heart.innerHTML = "❤️";
+                document.body.appendChild(heart);
+                heart.style.left = Math.random() * window.innerWidth + "px";
+                heart.style.top = Math.random() * window.innerHeight + "px";
+                setTimeout(() => heart.remove(), 2000);
+            }
+        }
+
+        // Move background with mouse movement
+        document.addEventListener("mousemove", (e) => {
+            let moveX = (e.clientX / window.innerWidth) * 40 - 20;
+            let moveY = (e.clientY / window.innerHeight) * 40 - 20;
+            background.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+
+        // Ensure the bounding box updates on window resize
+        window.addEventListener("resize", () => {
+            boundingBox.right = window.innerWidth - 150;
+            boundingBox.bottom = window.innerHeight - 150;
+        });
+    </script>
+</body>
+</html>
